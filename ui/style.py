@@ -1,4 +1,4 @@
-# ui/style.py
+# ui / style.py
 def apply_styles(widget):
     widget.setStyleSheet("""
         QWidget {

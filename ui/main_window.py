@@ -1,4 +1,4 @@
-# ui/main_window.py
+# ui / main_window.py
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
     QFileDialog, QMessageBox, QHBoxLayout
@@ -67,15 +67,21 @@ class MainWindow(QWidget):
             QMessageBox.warning(self, "提示", "请先选择文件")
 
     def dragEnterEvent(self, event):
+        print("dragEnterEvent triggered")
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
+        else:
+            event.ignore()
 
     def dropEvent(self, event):
-        files = [u.toLocalFile() for u in event.mimeData().urls()]
-        ncm_files = [f for f in files if f.lower().endswith(".ncm")]
-        if ncm_files:
-            self.selected_files = ncm_files
-            self.status_label.setText(f"拖拽添加了 {len(ncm_files)} 个文件")
-            self.convert_btn.setEnabled(True)
-        else:
-            QMessageBox.warning(self, "提示", "请拖入 .ncm 文件")
+        print("dropEvent triggered")
+        if event.mimeData().hasUrls():
+            files = [u.toLocalFile() for u in event.mimeData().urls()]
+            ncm_files = [f for f in files if f.lower().endswith(".ncm")]
+            if ncm_files:
+                self.selected_files = ncm_files
+                self.status_label.setText(f"拖拽添加了 {len(ncm_files)} 个文件")
+                self.convert_btn.setEnabled(True)
+            else:
+                QMessageBox.warning(self, "提示", "请拖入 .ncm 文件")
+
