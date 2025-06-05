@@ -21,7 +21,7 @@ class MainWindow(QWidget):
         else:
             self.bundle_dir = os.path.dirname(os.path.abspath(__file__))
 
-        self.setWindowTitle("NCM 转换器")
+        self.setWindowTitle("NCM2MP3 -Yuri")
         self.setFixedSize(600, 360)
         self.setAcceptDrops(True)
 
@@ -37,7 +37,7 @@ class MainWindow(QWidget):
         layout.setContentsMargins(40, 40, 40, 40)
         layout.setSpacing(20)
 
-        title = QLabel("🎧 NCM 批量转换器")
+        title = QLabel("🎧 NCM2MP3")
         title.setFont(QFont("Arial", 20, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
