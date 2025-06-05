@@ -1,4 +1,7 @@
 # ui / main_window.py
+import os
+import sys
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton,
     QFileDialog, QMessageBox, QHBoxLayout
@@ -12,11 +15,21 @@ from .style import apply_styles
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        # 添加资源路径处理
+        if getattr(sys, 'frozen', False):
+            self.bundle_dir = sys._MEIPASS
+        else:
+            self.bundle_dir = os.path.dirname(os.path.abspath(__file__))
+
         self.setWindowTitle("NCM 转换器")
         self.setFixedSize(600, 360)
         self.setAcceptDrops(True)
 
-        apply_styles(self)  # 应用样式
+        for child in self.findChildren(QWidget):
+            child.setAcceptDrops(True)
+
+        # 临时注释掉样式应用
+        # apply_styles(self)
 
         self.selected_files = []
 
@@ -46,6 +59,9 @@ class MainWindow(QWidget):
         btn_layout.addWidget(self.convert_btn)
         layout.addLayout(btn_layout)
 
+        # 添加窗口层次结构检查
+        print("窗口子控件:", self.findChildren(QWidget))
+
     def select_files(self):
         files, _ = QFileDialog.getOpenFileNames(
             self, "选择 NCM 文件", "", "NCM 文件 (*.ncm)"
@@ -67,21 +83,17 @@ class MainWindow(QWidget):
             QMessageBox.warning(self, "提示", "请先选择文件")
 
     def dragEnterEvent(self, event):
-        print("dragEnterEvent triggered")
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
             event.ignore()
 
     def dropEvent(self, event):
-        print("dropEvent triggered")
-        if event.mimeData().hasUrls():
-            files = [u.toLocalFile() for u in event.mimeData().urls()]
-            ncm_files = [f for f in files if f.lower().endswith(".ncm")]
-            if ncm_files:
-                self.selected_files = ncm_files
-                self.status_label.setText(f"拖拽添加了 {len(ncm_files)} 个文件")
-                self.convert_btn.setEnabled(True)
-            else:
-                QMessageBox.warning(self, "提示", "请拖入 .ncm 文件")
-
+        files = [u.toLocalFile() for u in event.mimeData().urls()]
+        ncm_files = [f for f in files if f.lower().endswith(".ncm")]
+        if ncm_files:
+            self.selected_files = ncm_files
+            self.status_label.setText(f"拖拽添加了 {len(ncm_files)} 个文件")
+            self.convert_btn.setEnabled(True)
+        else:
+            QMessageBox.warning(self, "提示", "请拖入 .ncm 文件")
